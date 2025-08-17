@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def browser():
     LINK = 'https://store.steampowered.com/'
     SCREEN_SIZE = 'window-size=1920x1080'
