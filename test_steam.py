@@ -5,25 +5,25 @@ from selenium.webdriver.common.by import By
 import faker
 
 faker = faker.Faker()
-CURRENT_URL = 'https://store.steampowered.com/'
-MAIN_TITLE = By.XPATH,"//*[@id='home_featured_and_recommended']"
+MAIN_ELEM = (By.ID, "home_featured_and_recommended")
+LOGIN_ELEM = (By.XPATH, "//*[contains(@class, 'headline')]")
 WAIT = 10
 
-SIGN_IN = By.XPATH, "(//*[contains(text(), 'login')])[1]"
-INPUT_MAIL = By.XPATH, "(//input[contains(@type, 'text')])[1]"
-INPUT_PASS = By.XPATH, "//input[contains(@type, 'password')]"
-BTN_SIGN_IN = By.XPATH, "//button[contains(text(), 'Sign in')]"
-ERR_MSG = By.XPATH, "//*[contains(text(), 'password and account')]"
+SIGN_IN = (By.XPATH, "(//*[contains(text(), 'login')])[1]")
+INPUT_MAIL = (By.XPATH, "(//input[contains(@type, 'text')])[1]")
+INPUT_PASS = (By.XPATH, "//input[contains(@type, 'password')]")
+BTN_SIGN_IN = (By.XPATH, "//button[contains(text(), 'Sign in')]")
+ERR_MSG = (By.XPATH, "(//form)[1]//div[contains(text(), 'Please check your password')]")
 
 
 def test_steam(browser: WebDriver):
-    assert browser.current_url == CURRENT_URL
-    assert browser.execute_script('return document.readyState;') == 'complete'
     wait = WebDriverWait(browser, WAIT)
-    wait.until(EC.presence_of_element_located(MAIN_TITLE))
+    main_elem = wait.until(EC.visibility_of_element_located(MAIN_ELEM))
+    assert 'featured & recommended' in main_elem.text.lower().strip()
     sign_in = wait.until(EC.element_to_be_clickable(SIGN_IN))
     sign_in.click()
-    assert browser.execute_script('return document.readyState;') == 'complete'
+    login_elem = wait.until(EC.visibility_of_element_located(LOGIN_ELEM))
+    assert 'new to steam?' in login_elem.text.lower().strip()
     input_mail = wait.until(EC.element_to_be_clickable(INPUT_MAIL))
     input_mail.clear()
     wait.until(EC.element_to_be_clickable(INPUT_MAIL))
@@ -34,4 +34,5 @@ def test_steam(browser: WebDriver):
     input_pass.send_keys(faker.password())
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
-    assert wait.until(EC.text_to_be_present_in_element(ERR_MSG, 'password and account'))
+    err_msg = wait.until(EC.visibility_of_element_located(ERR_MSG))
+    assert 'please check your password and account' in err_msg.text.lower().strip()
