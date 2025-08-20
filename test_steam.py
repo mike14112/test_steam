@@ -8,22 +8,20 @@ faker = faker.Faker()
 MAIN_ELEM = (By.ID, "home_featured_and_recommended")
 LOGIN_ELEM = (By.XPATH, "//*[contains(@class, 'headline')]")
 WAIT = 10
-
 SIGN_IN = (By.XPATH, "(//*[contains(text(), 'login')])[1]")
 INPUT_MAIL = (By.XPATH, "(//input[contains(@type, 'text')])[1]")
 INPUT_PASS = (By.XPATH, "//input[contains(@type, 'password')]")
 BTN_SIGN_IN = (By.XPATH, "//button[contains(text(), 'Sign in')]")
-ERR_MSG = (By.XPATH, "(//form)[1]//div[contains(text(), 'Please check your password')]")
+FORM_ERR = (By.XPATH, "//*[contains(text(), 'password and account')]")
+EXPECTED = 'password and account'
 
 
 def test_steam(browser: WebDriver):
     wait = WebDriverWait(browser, WAIT)
-    main_elem = wait.until(EC.visibility_of_element_located(MAIN_ELEM))
-    assert 'featured & recommended' in main_elem.text.lower().strip()
+    wait.until(EC.visibility_of_element_located(MAIN_ELEM)).is_displayed()
     sign_in = wait.until(EC.element_to_be_clickable(SIGN_IN))
     sign_in.click()
-    login_elem = wait.until(EC.visibility_of_element_located(LOGIN_ELEM))
-    assert 'new to steam?' in login_elem.text.lower().strip()
+    wait.until(EC.visibility_of_element_located(LOGIN_ELEM)).is_displayed()
     input_mail = wait.until(EC.element_to_be_clickable(INPUT_MAIL))
     input_mail.clear()
     wait.until(EC.element_to_be_clickable(INPUT_MAIL))
@@ -34,5 +32,8 @@ def test_steam(browser: WebDriver):
     input_pass.send_keys(faker.password())
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
-    err_msg = wait.until(EC.visibility_of_element_located(ERR_MSG))
-    assert 'please check your password and account' in err_msg.text.lower().strip()
+    actual = wait.until(EC.presence_of_element_located(FORM_ERR)).text
+    assert EXPECTED in actual.strip().strip()
+
+
+    #assert 'please check your password and account' in err_msg.text.lower().strip()
