@@ -32,6 +32,5 @@ def test_steam(browser: WebDriver):
     input_pass.send_keys(faker.password())
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
-    btn_sign.click()
     actual_err = wait.until(EC.visibility_of_element_located(FORM_ERR))
     assert EXPECTED in actual_err.text.lower()
