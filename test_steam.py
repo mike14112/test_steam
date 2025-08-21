@@ -35,10 +35,11 @@ def test_steam(browser: WebDriver):
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
     try:
-        err_text = WebDriverWait(browser, 10).until(
-            lambda b: b.find_element(*FORM_ERR).text.replace("\xa0", " ").strip()
+        err_text = WebDriverWait(browser, WAIT).until(
+            lambda b: b.find_element(*FORM_ERR).text.replace("\xa0", " ")
         )
         print("Ошибка появилась:", err_text)
         assert EXPECTED in err_text.lower()
     except TimeoutException:
-        print("Ошибка так и не появилась")
+        raise  AssertionError("Ошибка так и не появилась")
+
