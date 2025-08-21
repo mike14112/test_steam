@@ -1,5 +1,4 @@
 import faker
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,7 +12,7 @@ SIGN_IN = (By.XPATH, "(//*[contains(text(), 'login')])[1]")
 INPUT_MAIL = (By.XPATH, "(//input[contains(@type, 'text')])[1]")
 INPUT_PASS = (By.XPATH, "//input[contains(@type, 'password')]")
 BTN_SIGN_IN = (By.XPATH, "//button[contains(text(), 'Sign in')]")
-FORM_ERR = (By.XPATH, "(//form//div)[13]")
+FORM_ERR = (By.XPATH, "(//form//div[string-length(normalize-space()) > 1])[9]")
 EXPECTED = 'password and account'
 actual = ''
 
@@ -34,12 +33,6 @@ def test_steam(browser: WebDriver):
     input_pass.send_keys(faker.password())
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
-    try:
-        err_text = WebDriverWait(browser, WAIT).until(
-            lambda b: b.find_element(*FORM_ERR).text.replace("\xa0", " ")
-        )
-        print("Ошибка появилась:", err_text)
-        assert EXPECTED in err_text.lower()
-    except TimeoutException:
-        raise  AssertionError("Ошибка так и не появилась")
-
+    btn_sign.click()
+    err = wait.until(EC.visibility_of_element_located(FORM_ERR))
+    assert EXPECTED in err.text.lower()
