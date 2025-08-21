@@ -16,7 +16,6 @@ FORM_ERR = (By.XPATH, "(//form//div[string-length() > 1])[9]")
 EXPECTED = 'password and account'
 
 
-
 def test_steam(browser: WebDriver):
     wait = WebDriverWait(browser, WAIT)
     browser.find_element(*MAIN_ELEM).is_displayed()
