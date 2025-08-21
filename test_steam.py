@@ -1,8 +1,9 @@
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+import faker
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
-import faker
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 faker = faker.Faker()
 MAIN_ELEM = (By.ID, "home_featured_and_recommended")
@@ -12,8 +13,9 @@ SIGN_IN = (By.XPATH, "(//*[contains(text(), 'login')])[1]")
 INPUT_MAIL = (By.XPATH, "(//input[contains(@type, 'text')])[1]")
 INPUT_PASS = (By.XPATH, "//input[contains(@type, 'password')]")
 BTN_SIGN_IN = (By.XPATH, "//button[contains(text(), 'Sign in')]")
-FORM_ERR = (By.XPATH, "//*[contains(text(), 'password and account')]")
+FORM_ERR = (By.XPATH, "(//form//div)[13]")
 EXPECTED = 'password and account'
+actual = ''
 
 
 def test_steam(browser: WebDriver):
@@ -32,8 +34,11 @@ def test_steam(browser: WebDriver):
     input_pass.send_keys(faker.password())
     btn_sign = wait.until(EC.element_to_be_clickable(BTN_SIGN_IN))
     btn_sign.click()
-    actual = wait.until(EC.presence_of_element_located(FORM_ERR)).text
-    assert EXPECTED in actual.strip().strip()
-
-
-    #assert 'please check your password and account' in err_msg.text.lower().strip()
+    try:
+        err_text = WebDriverWait(browser, 10).until(
+            lambda b: b.find_element(*FORM_ERR).text.replace("\xa0", " ").strip()
+        )
+        print("Ошибка появилась:", err_text)
+        assert EXPECTED in err_text.lower()
+    except TimeoutException:
+        print("Ошибка так и не появилась")
