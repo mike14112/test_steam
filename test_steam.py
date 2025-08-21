@@ -36,5 +36,3 @@ def test_steam(browser: WebDriver):
     btn_sign.click()
     actual_err = wait.until(EC.visibility_of_element_located(FORM_ERR))
     assert EXPECTED in actual_err.text.lower()
-
-
