@@ -1,6 +1,7 @@
 # Папка PyCharm
 .idea/
 .idea/*
+.pytest_cache/
 
 # Кэш Python
 __pycache__/
